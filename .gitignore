@@ -1,0 +1,11 @@
+# General
+.env
+
+
+# Python
+__pycache__/
+
+
+# Terraform
+*.tfstate*
+.terraform/
