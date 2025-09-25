@@ -1,6 +1,6 @@
 # Import Dependencies
 from boto3 import resource as aws  # type: ignore
-from fastapi import Cookie, FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -17,7 +17,7 @@ jinja = Jinja2Templates("template").TemplateResponse
 
 # Application Endpoints
 @app.get("/")
-def home(request: Request, passhash: str = Cookie("")) -> HTMLResponse:
+def home(request: Request) -> HTMLResponse:
 	if not isinstance(
 		sections := database.get_item(Key={"name": "All"})
 		.get("Item", {})
@@ -29,7 +29,10 @@ def home(request: Request, passhash: str = Cookie("")) -> HTMLResponse:
 	return jinja(
 		request,
 		"home.html",
-		context={"sections": sections, "admin": verify_passhash(passhash)},
+		context={
+			"sections": sections,
+			"admin": verify_passhash(request.cookies.get("passhash")),
+		},
 	)
 
 
@@ -39,19 +42,20 @@ def login(request: Request) -> HTMLResponse:
 
 
 @app.get("/section/{name}")
-def section(
-	request: Request, name: str, passhash: str = Cookie("")
-) -> HTMLResponse:
+def section(request: Request, name: str) -> HTMLResponse:
 	if (section := database.get_item(Key={"name": name}).get("Item")) is None:
 		raise HTTPException(status.HTTP_404_NOT_FOUND)
 
 	return jinja(
 		request,
 		"section.html",
-		context={"section": section, "admin": verify_passhash(passhash)},
+		context={
+			"section": section,
+			"admin": verify_passhash(request.cookies.get("passhash")),
+		},
 	)
 
 
 # Utility Functions
-def verify_passhash(passhash: str) -> bool:
+def verify_passhash(passhash: str | None) -> bool:
 	return passhash == PASSHASH
