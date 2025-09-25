@@ -38,6 +38,20 @@ def login(request: Request) -> HTMLResponse:
 	return jinja(request, "login.html")
 
 
+@app.get("/section/{name}")
+def section(
+	request: Request, name: str, passhash: str = Cookie("")
+) -> HTMLResponse:
+	if (section := database.get_item(Key={"name": name}).get("Item")) is None:
+		raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+	return jinja(
+		request,
+		"section.html",
+		context={"section": section, "admin": verify_passhash(passhash)},
+	)
+
+
 # Utility Functions
 def verify_passhash(passhash: str) -> bool:
 	return passhash == PASSHASH
