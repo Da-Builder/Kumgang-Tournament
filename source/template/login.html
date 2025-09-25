@@ -1,29 +1,29 @@
 {% extends "layout.html" %} {% block head %}
 
 <script>
-	async function login(target) {
-		cookieStore.set("passhash", await sha256(target.value));
-		location.replace("/");
-	}
-
-	async function sha256(data) {
-		return Array.from(
-			new Uint8Array(
-				await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data))
-			)
-		)
+	async function login(event) {
+		let password = event.currentTarget.firstElementChild.value;
+		password = new TextEncoder().encode(password);
+		password = await crypto.subtle.digest("SHA-256", password);
+		password = Array.from(new Uint8Array(password))
 			.map((byte) => byte.toString(16).padStart(2, "0"))
 			.join("");
+
+		cookieStore.set("passhash", password);
+		location.replace("/");
 	}
 </script>
 
 {% endblock %} {% block main %}
 
-<form
-	class="d-flex flex-column gap-4"
-	onsubmit="login(event.currentTarget.firstElementChild)"
->
-	<input autofocus class="form-control w-100" placeholder="Password" />
+<form onsubmit="login(event)">
+	<input
+		autofocus
+		class="form-control w-100 mb-4"
+		type="password"
+		name="password"
+		placeholder="Password"
+	/>
 
 	<button class="btn btn-outline-primary w-100 border-4 rounded-5 fw-bold">
 		Login
