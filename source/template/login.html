@@ -1,0 +1,33 @@
+{% extends "layout.html" %} {% block head %}
+
+<script>
+	async function login(target) {
+		cookieStore.set("passhash", await sha256(target.value));
+		location.replace("/");
+	}
+
+	async function sha256(data) {
+		return Array.from(
+			new Uint8Array(
+				await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data))
+			)
+		)
+			.map((byte) => byte.toString(16).padStart(2, "0"))
+			.join("");
+	}
+</script>
+
+{% endblock %} {% block main %}
+
+<form
+	class="d-flex flex-column gap-4"
+	onsubmit="login(event.currentTarget.firstElementChild)"
+>
+	<input autofocus class="form-control w-100" placeholder="Password" />
+
+	<button class="btn btn-outline-primary w-100 border-4 rounded-5 fw-bold">
+		Login
+	</button>
+</form>
+
+{% endblock %}
