@@ -1,0 +1,47 @@
+{% extends "layout.html" %} {% block head %}
+
+<script>
+	async function toggle(section) {
+		if (section.classList.contains("loading")) return;
+
+		if (!section.firstElementChild.classList.contains("collapsed")) {
+			section.firstElementChild.classList.add("collapsed");
+			bootstrap.Collapse.getOrCreateInstance(section.lastElementChild).hide();
+			return;
+		}
+
+		try {
+			section.classList.add("loading");
+			section.classList.remove("error");
+
+			const response = await fetch(`/section/${section.dataset.id}`);
+			if (!response.ok) throw new Error();
+
+			section.lastElementChild.lastElementChild.innerHTML =
+				await response.text();
+
+			section.classList.remove("loading");
+			section.firstElementChild.classList.remove("collapsed");
+			bootstrap.Collapse.getOrCreateInstance(section.lastElementChild).show();
+		} catch (error) {
+			section.classList.replace("loading", "error");
+		}
+	}
+</script>
+
+{% endblock %} {% block main %} {% for section in sections %}
+
+<section class="accordion-item border-primary border-2" data-id="{{ section }}">
+	<button
+		class="accordion-header accordion-button fw-bold fs-5 text-body shadow-none collapsed"
+		onclick="toggle(event.currentTarget.parentElement)"
+	>
+		{{ section }}
+	</button>
+
+	<div class="collapse">
+		<div class="p-4"></div>
+	</div>
+</section>
+
+{% endfor %} {% endblock %}
