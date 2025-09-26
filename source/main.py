@@ -1,6 +1,6 @@
 # Import Dependencies
 from boto3 import resource as aws  # type: ignore
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import Body, FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -61,6 +61,38 @@ def section(request: Request, name: str) -> HTMLResponse:
 			"people": {idx: person for idx, person in enumerate(people)},
 			"admin": verify_passhash(request.cookies.get("passhash")),
 		},
+	)
+
+
+@app.put("/section")
+def section_update(
+	request: Request,
+	section: str = Body(),
+	person: str = Body(),
+	person_id: int = Body(-1),
+	rank: str = Body(""),
+) -> None:
+	if not verify_passhash(request.cookies.get("passhash")):
+		raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+	expression: str
+	attributes: dict[str, str | list[str]]
+
+	if person_id < 0:
+		expression = "SET people = list_append(people, :person)"
+		attributes = {":person": [person]}
+	else:
+		expression = f"SET people[{person_id}] = :person"
+		attributes = {":person": person}
+
+	if rank in {"gold", "silver", "bronze"}:
+		expression += f", {rank} = :rank"
+		attributes.update({":rank": person})
+
+	database.update_item(
+		Key={"name": section},
+		UpdateExpression=expression,
+		ExpressionAttributeValues=attributes,
 	)
 
 
