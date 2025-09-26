@@ -1,12 +1,14 @@
 # Import Dependencies
+from os import environ
+
 from boto3 import resource as aws  # type: ignore
 from fastapi import Body, FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 # Application Enviroments
-DATABASE: str = "Test"
-PASSHASH: str = "Test"
+DATABASE: str = environ["DATABASE"]
+PASSHASH: str = environ["PASSHASH"]
 
 
 # Application Setups
