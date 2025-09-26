@@ -1,10 +1,14 @@
 {% extends "layout.html" %} {% block head %}
 
 <script>
-	async function toggle(section) {
-		if (section.classList.contains("loading")) return;
+	async function toggleAccordion(section) {
+		if (
+			section.classList.contains("loading") ||
+			section.lastElementChild.classList.contains("collapsing")
+		)
+			return;
 
-		if (!section.firstElementChild.classList.contains("collapsed")) {
+		if (section.lastElementChild.classList.contains("show")) {
 			section.firstElementChild.classList.add("collapsed");
 			bootstrap.Collapse.getOrCreateInstance(section.lastElementChild).hide();
 			return;
@@ -34,7 +38,7 @@
 <section class="accordion-item border-primary border-2" data-id="{{ section }}">
 	<button
 		class="accordion-header accordion-button fw-bold fs-5 text-body shadow-none collapsed"
-		onclick="toggle(event.currentTarget.parentElement)"
+		onclick="toggleAccordion(event.currentTarget.parentElement)"
 	>
 		{{ section }}
 	</button>
