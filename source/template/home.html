@@ -1,6 +1,12 @@
 {% extends "layout.html" %} {% block head %}
 
 <script>
+	async function poll(section) {
+		const response = await fetch(`/section/${section.dataset.id}`);
+		if (!response.ok) throw new Error();
+		section.lastElementChild.lastElementChild.innerHTML = await response.text();
+	}
+
 	async function toggleAccordion(section) {
 		if (
 			section.classList.contains("loading") ||
@@ -18,11 +24,7 @@
 			section.classList.add("loading");
 			section.classList.remove("error");
 
-			const response = await fetch(`/section/${section.dataset.id}`);
-			if (!response.ok) throw new Error();
-
-			section.lastElementChild.lastElementChild.innerHTML =
-				await response.text();
+			await poll(section);
 
 			section.classList.remove("loading");
 			section.firstElementChild.classList.remove("collapsed");
