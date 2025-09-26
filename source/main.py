@@ -20,19 +20,13 @@ jinja = Jinja2Templates("template").TemplateResponse
 # Application Endpoints
 @app.get("/")
 def home(request: Request) -> HTMLResponse:
-	if not isinstance(
-		sections := database.get_item(Key={"name": "All"})
-		.get("Item", {})
-		.get("sections"),
-		list,
-	):
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 	return jinja(
 		request,
 		"home.html",
 		context={
-			"sections": sections,
+			"sections": database.get_item(Key={"name": "All"})
+			.get("Item", {})
+			.get("sections"),
 			"admin": verify_passhash(request.cookies.get("passhash")),
 		},
 	)
