@@ -5,6 +5,7 @@ from boto3 import resource as aws  # type: ignore
 from fastapi import Body, FastAPI, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as BaseHTTPException
 
 # Application Enviroments
 DATABASE: str = environ["DATABASE"]
@@ -12,7 +13,7 @@ PASSHASH: str = environ["PASSHASH"]
 
 
 # Application Setups
-app = FastAPI(default_response_class=HTMLResponse)
+app = FastAPI(default_response_class=HTMLResponse, openapi_url=None)
 database = aws("dynamodb").Table(DATABASE)
 jinja = Jinja2Templates("template").TemplateResponse
 
@@ -92,6 +93,31 @@ def section_update(
 	)
 
 
+@app.exception_handler(BaseHTTPException)
+def http_handler(
+	request: Request, exception: BaseHTTPException
+) -> HTMLResponse:
+	return render_error(request, exception.status_code, exception.detail)
+
+
+@app.exception_handler(Exception)
+def database_handler(request: Request, exception: Exception) -> HTMLResponse:
+	return render_error(request)
+
+
 # Utility Functions
 def verify_passhash(passhash: str | None) -> bool:
 	return passhash == PASSHASH
+
+
+def render_error(
+	request: Request,
+	code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
+	message: str = "Internal Server Error",
+) -> HTMLResponse:
+	return jinja(
+		request,
+		"error.html",
+		status_code=code,
+		context={"code": code, "message": message},
+	)
