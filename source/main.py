@@ -46,11 +46,19 @@ def section(request: Request, name: str) -> HTMLResponse:
 	if (section := database.get_item(Key={"name": name}).get("Item")) is None:
 		raise HTTPException(status.HTTP_404_NOT_FOUND)
 
+	if not isinstance(people := section.get("people"), list):
+		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 	return jinja(
 		request,
 		"section.html",
 		context={
-			"section": section,
+			"podium": (
+				section.get("gold"),
+				section.get("silver"),
+				section.get("bronze"),
+			)[: min(3, len(people))],
+			"people": {idx: person for idx, person in enumerate(people)},
 			"admin": verify_passhash(request.cookies.get("passhash")),
 		},
 	)

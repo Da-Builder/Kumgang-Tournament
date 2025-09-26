@@ -1,0 +1,27 @@
+<h6 class="mb-1 fw-bold">Podium</h6>
+
+<div class="list-group podium">
+	{% for person in podium %}
+
+	<li class="list-group-item">{{ person or "???" }}</li>
+
+	{% endfor %}
+</div>
+
+<h6 class="mb-1 mt-2 fw-bold">Contestants</h6>
+
+<div class="list-group">
+	{% for id, person in people | dictsort(by="value") %}
+
+	<li class="list-group-item">{{ person }}</li>
+
+	{% endfor %}
+</div>
+
+{% if admin %}
+
+<button class="btn btn-outline-primary w-100 mt-3 border-4 rounded-5 fw-bold">
+	New Contestant
+</button>
+
+{% endif %}
