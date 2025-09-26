@@ -7,5 +7,5 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 
-COPY source .
+COPY --exclude=**/__pycache__/ source .
 CMD ["uvicorn", "--port=8080", "main:app"]
