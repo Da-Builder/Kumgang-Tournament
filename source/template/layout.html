@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+			integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+			crossorigin="anonymous"
+			rel="stylesheet"
+		/>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+			crossorigin="anonymous"
+		></script>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
+			rel="stylesheet"
+		/>
+
+		<link
+			href="https://www.kumgang.co.nz/wp-content/uploads/2024/02/logo.png"
+			rel="icon"
+		/>
+
+		<style>
+			:root {
+				--bs-body-font-family: "Open Sans", var(--bs-font-sans-serif);
+
+				--bs-body-color-rgb: 102, 102, 102;
+				--bs-primary-rgb: 205, 92, 92;
+				--bs-border-color-rgb: 238, 238, 238;
+
+				--bs-body-color: rgb(var(--bs-body-color-rgb));
+				--bs-primary: rgb(var(--bs-primary-rgb));
+				--bs-border-color: rgb(var(--bs-border-color-rgb));
+
+				--bs-primary-bg-subtle: hsl(from var(--bs-primary) h s calc(l * 1.52));
+			}
+
+			::backdrop {
+				background-color: #000000d8;
+			}
+
+			.accordion {
+				--bs-accordion-btn-icon-transform: none;
+				--bs-accordion-btn-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='rgb(102, 102, 102)'><path d='M160-200h160v-320H160v320Zm240 0h160v-560H400v560Zm240 0h160v-240H640v240ZM80-120v-480h240v-240h320v320h240v400H80Z'/></svg>");
+				--bs-accordion-btn-active-icon: var(--bs-accordion-btn-icon);
+
+				&.loading {
+					--bs-accordion-btn-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='rgb(102, 102, 102)'><path d='M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z'><animateTransform attributeName='transform' type='rotate' dur='1s' from='360 480 -480' to='0 480 -480' repeatCount='indefinite'/></path></svg>");
+				}
+			}
+
+			.btn-outline-primary {
+				--bs-btn-color: var(--bs-primary);
+				--bs-btn-border-color: var(--bs-btn-color);
+
+				--bs-btn-hover-color: white;
+				--bs-btn-hover-bg: var(--bs-btn-color);
+				--bs-btn-hover-border-color: var(--bs-btn-color);
+
+				--bs-btn-active-color: white;
+				--bs-btn-active-bg: var(--bs-btn-color);
+				--bs-btn-active-border-color: var(--bs-btn-color);
+
+				--bs-btn-disabled-color: var(--bs-btn-color);
+				--bs-btn-disabled-border-color: var(--bs-btn-color);
+
+				--bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+			}
+
+			.podium {
+				& > :nth-child(1)::before {
+					content: "🥇 ";
+				}
+
+				& > :nth-child(2)::before {
+					content: "🥈 ";
+				}
+
+				& > :nth-child(3)::before {
+					content: "🥉 ";
+				}
+			}
+		</style>
+
+		{% block head %} {% endblock %}
+
+		<title>Kumgang Tournament</title>
+	</head>
+
+	<body
+		class="min-vh-100 d-grid gap-5"
+		style="grid-template-rows: max-content auto"
+	>
+		<header class="pt-4 text-center">
+			<img
+				style="max-width: 100px"
+				src="https://www.kumgang.co.nz/wp-content/uploads/2024/02/logo.png"
+				alt="Kumgang Taekwondo"
+			/>
+
+			<h1 class="my-2 fw-bold text-primary">Kumgang Tournament</h1>
+			<hr
+				class="col-11 mx-auto my-0 border-4 rounded-5 opacity-100 border-primary"
+			/>
+		</header>
+
+		<main
+			class="col-10 mx-auto accordion accordion-flush"
+			style="max-width: 80ch"
+		>
+			{% block main %} {% endblock %}
+		</main>
+	</body>
+</html>
