@@ -50,10 +50,11 @@ def section(request: Request, name: str) -> HTMLResponse:
 		request,
 		"section.html",
 		context={
-			"podium": (
-				section.get("gold"),
-				section.get("silver"),
-				section.get("bronze"),
+			"podium": tuple(
+				people[int(rank)]
+				if (rank := str(section.get(medal))).isdecimal()
+				else None
+				for medal in ("gold", "silver", "bronze")
 			)[: min(3, len(people))],
 			"people": {idx: person for idx, person in enumerate(people)},
 			"admin": verify_passhash(request.cookies.get("passhash")),
@@ -65,15 +66,15 @@ def section(request: Request, name: str) -> HTMLResponse:
 def section_update(
 	request: Request,
 	section: str = Body(),
+	rank: str = Body(),
 	person: str = Body(),
-	person_id: int = Body(-1),
-	rank: str = Body(""),
+	person_id: int = Body(),
 ) -> None:
 	if not verify_passhash(request.cookies.get("passhash")):
 		raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
 	expression: str
-	attributes: dict[str, str | list[str]]
+	attributes: dict[str, int | str | list[str]]
 
 	if person_id < 0:
 		expression = "SET people = list_append(people, :person)"
@@ -84,7 +85,7 @@ def section_update(
 
 	if rank in {"gold", "silver", "bronze"}:
 		expression += f", {rank} = :rank"
-		attributes.update({":rank": person})
+		attributes.update({":rank": person_id})
 
 	database.update_item(
 		Key={"name": section},
