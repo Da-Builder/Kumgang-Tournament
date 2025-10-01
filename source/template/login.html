@@ -1,7 +1,10 @@
 {% extends "layout.html" %} {% block head %}
 
 <script>
-	async function login(password) {
+	async function login(event) {
+		event.preventDefault();
+
+		let password = event.currentTarget.firstElementChild.value;
 		password = new TextEncoder().encode(password);
 		password = await crypto.subtle.digest("SHA-256", password);
 		password = Array.from(new Uint8Array(password))
@@ -15,7 +18,7 @@
 
 {% endblock %} {% block main %}
 
-<form onsubmit="login(event.currentTarget.firstElementChild.value)">
+<form onsubmit="login(event)">
 	<input
 		autofocus
 		class="form-control w-100 mb-4"
