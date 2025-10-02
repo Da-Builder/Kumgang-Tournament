@@ -1,8 +1,11 @@
 {% extends "layout.html" %} {% block head %}
 
 <script>
-	async function poll(section) {
-		const response = await fetch(`/section/${section.dataset.id}`);
+	async function pollSection(section) {
+		const response = await fetch(
+			`/section/${encodeURIComponent(section.dataset.id)}`
+		);
+
 		if (!response.ok) throw new Error();
 		section.lastElementChild.lastElementChild.innerHTML = await response.text();
 	}
@@ -24,7 +27,7 @@
 			section.classList.add("loading");
 			section.classList.remove("error");
 
-			await poll(section);
+			await pollSection(section);
 
 			section.classList.remove("loading");
 			section.firstElementChild.classList.remove("collapsed");
