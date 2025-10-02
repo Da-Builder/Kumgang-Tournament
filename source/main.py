@@ -3,7 +3,7 @@ from os import environ
 
 from boto3 import resource as aws  # type: ignore
 from fastapi import Body, FastAPI, HTTPException, Request, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as BaseHTTPException
 
@@ -98,6 +98,36 @@ def section_update(
 	)
 
 
+@app.get("/state", response_class=JSONResponse)
+def state(request: Request) -> JSONResponse:
+	return JSONResponse(
+		{
+			name: bytes(
+				jinja(request, "status.html", context={"state": state}).body
+			).decode()
+			for name, state in database.get_item(Key={"name": "All"})  # type: ignore
+			.get("Item", {})
+			.get("sections")
+		}
+	)
+
+
+@app.put("/state")
+def state_update(
+	request: Request, section: int = Body(), state: str = Body()
+) -> None:
+	if not verify_passhash(request.cookies.get("passhash")):
+		raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+	database.update_item(
+		Key={"name": "All"},
+		UpdateExpression=f"SET sections[{section}][1] = :state",
+		ExpressionAttributeValues={
+			":state": state if state in {"soon", "live", "done"} else None
+		},
+	)
+
+
 @app.exception_handler(BaseHTTPException)
 def http_handler(
 	request: Request, exception: BaseHTTPException
@@ -106,7 +136,7 @@ def http_handler(
 
 
 @app.exception_handler(Exception)
-def database_handler(request: Request, exception: Exception) -> HTMLResponse:
+def handler(request: Request, exception: Exception) -> HTMLResponse:
 	return render_error(request)
 
 
