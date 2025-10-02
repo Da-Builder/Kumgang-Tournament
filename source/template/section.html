@@ -11,16 +11,29 @@
 <h6 class="mb-1 mt-2 fw-bold">Contestants</h6>
 
 <div class="list-group">
-	{% for id, person in people | dictsort(by="value") %}
+	{% for id, person in people | dictsort(by="value") %} {% if admin %}
+
+	<button
+		class="list-group-item text-start"
+		data-id="{{ id }}"
+		onclick="openSectionForm(event.currentTarget, event.currentTarget.parentElement.parentElement.parentElement.parentElement.dataset.id)"
+	>
+		{{ person }}
+	</button>
+
+	{% else %}
 
 	<li class="list-group-item">{{ person }}</li>
 
-	{% endfor %}
+	{% endif %} {% endfor %}
 </div>
 
 {% if admin %}
 
-<button class="btn btn-outline-primary w-100 mt-3 border-4 rounded-5 fw-bold">
+<button
+	class="btn btn-outline-primary w-100 mt-3 border-4 rounded-5 fw-bold"
+	onclick="openSectionForm(event.currentTarget, event.currentTarget.parentElement.parentElement.parentElement.dataset.id)"
+>
 	New Contestant
 </button>
 

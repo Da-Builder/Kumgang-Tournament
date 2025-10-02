@@ -73,15 +73,19 @@ def section_update(
 	if not verify_passhash(request.cookies.get("passhash")):
 		raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
-	expression: str
-	attributes: dict[str, int | str | list[str]]
+	if not person:
+		raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE)
 
 	if person_id < 0:
-		expression = "SET people = list_append(people, :person)"
-		attributes = {":person": [person]}
-	else:
-		expression = f"SET people[{person_id}] = :person"
-		attributes = {":person": person}
+		database.update_item(
+			Key={"name": section},
+			UpdateExpression="SET people = list_append(people, :person)",
+			ExpressionAttributeValues={":person": [person]},
+		)
+		return
+
+	expression: str = f"SET people[{person_id}] = :person"
+	attributes: dict[str, int | str] = {":person": person}
 
 	if rank in {"gold", "silver", "bronze"}:
 		expression += f", {rank} = :rank"

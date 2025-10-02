@@ -32,17 +32,72 @@
 			section.classList.remove("loading");
 			section.firstElementChild.classList.remove("collapsed");
 			bootstrap.Collapse.getOrCreateInstance(section.lastElementChild).show();
-		} catch (error) {
+		} catch {
 			section.classList.replace("loading", "error");
 		}
 	}
+
+	// {% if admin %}
+
+	function closeDialog() {
+		document.querySelectorAll("dialog").forEach((dialog) => {
+			dialog.close();
+		});
+	}
+
+	function openSectionForm(button, sectionId) {
+		const dialog = document.querySelector("dialog:first-of-type");
+		dialog.firstElementChild.reset();
+
+		dialog.querySelector("input[name='section']").value = sectionId;
+		dialog.querySelector("button:last-of-type").textContent = "Save";
+
+		if (button.dataset.id) {
+			dialog.querySelector("div:first-of-type").classList.remove("d-none");
+			dialog.querySelector("input[name='person_id']").value = button.dataset.id;
+			dialog.querySelector("input[name='person']").value =
+				button.textContent.trim();
+		} else {
+			dialog.querySelector("div:first-of-type").classList.add("d-none");
+			dialog.querySelector("input[name='person_id']").value = -1;
+			dialog.querySelector("input[name='person']").value = null;
+		}
+
+		dialog.showModal();
+	}
+
+	async function sumbitSectionForm(event) {
+		event.preventDefault();
+
+		const form = event.currentTarget;
+		const data = Object.fromEntries(new FormData(form));
+
+		try {
+			const response = await fetch("/section", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			});
+			if (!response.ok) throw new Error();
+
+			await pollSection(
+				document.querySelector(`section[data-id='${data.section}']`)
+			);
+
+			closeDialog();
+		} catch {
+			form.querySelector("button:last-of-type").textContent = "Error";
+		}
+	}
+
+	// {% endif %}
 </script>
 
 {% endblock %} {% block main %} {% for section in sections %}
 
 <section class="accordion-item border-primary border-2" data-id="{{ section }}">
 	<button
-		class="accordion-header accordion-button fw-bold fs-5 text-body shadow-none collapsed"
+		class="accordion-header accordion-button fw-bold text-body shadow-none collapsed"
 		onclick="toggleAccordion(event.currentTarget.parentElement)"
 	>
 		{{ section }}
@@ -53,4 +108,48 @@
 	</div>
 </section>
 
-{% endfor %} {% endblock %}
+{% endfor %} {% if admin %}
+
+<dialog class="col-12 col-lg-3 border-0 rounded-4">
+	<form class="d-flex flex-column gap-4" onsubmit="sumbitSectionForm(event)">
+		<input type="hidden" name="section" />
+		<input type="hidden" name="person_id" />
+		<input type="hidden" name="rank" value="none" />
+
+		<input class="form-control" name="person" placeholder="Name (Required)" />
+
+		<div class="d-flex justify-content-between px-4 fs-4">
+			<label class="d-flex flex-column">
+				🥇
+				<input type="radio" name="rank" value="gold" />
+			</label>
+
+			<label class="d-flex flex-column">
+				🥈
+				<input type="radio" name="rank" value="silver" />
+			</label>
+
+			<label class="d-flex flex-column">
+				🥉
+				<input type="radio" name="rank" value="bronze" />
+			</label>
+		</div>
+
+		<div class="d-flex gap-2">
+			<button
+				autofocus
+				class="btn btn-outline-secondary w-100 border-4 rounded-5 fw-bold"
+				type="button"
+				onclick="closeDialog()"
+			>
+				Cancel
+			</button>
+
+			<button class="btn btn-outline-primary w-100 border-4 rounded-5 fw-bold">
+				Save
+			</button>
+		</div>
+	</form>
+</dialog>
+
+{% endif %} {% endblock %}
