@@ -1,0 +1,5 @@
+<span
+	class="{% if state == 'live' %} text-primary {% elif state == 'done' %} text-success {% elif state == 'soon' %} text-warning {% endif %}"
+>
+	{% if state %} ({{ state | title }}) {% endif %}
+</span>

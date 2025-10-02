@@ -1,3 +1,14 @@
+{% if admin %}
+
+<button
+	class="btn btn-outline-primary w-100 mb-3 border-4 rounded-5 fw-bold"
+	onclick="openStatusForm(event.currentTarget.parentElement.parentElement.parentElement.dataset.idx)"
+>
+	Update Status
+</button>
+
+{% endif %}
+
 <h6 class="mb-1 fw-bold">Podium</h6>
 
 <div class="list-group podium">
