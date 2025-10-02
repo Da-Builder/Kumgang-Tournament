@@ -1,6 +1,17 @@
 {% extends "layout.html" %} {% block head %}
 
 <script>
+	async function pollStatus() {
+		const response = await fetch(`/state`);
+		if (!response.ok) throw new Error();
+
+		for (const [section, html] of Object.entries(await response.json())) {
+			document.querySelector(
+				`section[data-id='${section}'] span > span`
+			).outerHTML = html;
+		}
+	}
+
 	async function pollSection(section) {
 		const response = await fetch(
 			`/section/${encodeURIComponent(section.dataset.id)}`
@@ -90,7 +101,43 @@
 		}
 	}
 
+	function openStatusForm(sectionId) {
+		const dialog = document.querySelector("dialog:last-of-type");
+		dialog.firstElementChild.reset();
+
+		dialog.querySelector("input[name='section']").value = sectionId;
+		dialog.querySelector("button:last-of-type").textContent = "Save";
+
+		dialog.showModal();
+	}
+
+	async function sumbitStatusForm(event) {
+		event.preventDefault();
+
+		const form = event.currentTarget;
+		const data = Object.fromEntries(new FormData(form));
+
+		try {
+			const response = await fetch("/state", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			});
+			if (!response.ok) throw new Error();
+
+			await pollStatus();
+
+			closeDialog();
+		} catch {
+			form.querySelector("button:last-of-type").textContent = "Error";
+		}
+	}
+
 	// {% endif %}
+
+	setInterval(() => {
+		pollStatus();
+	}, 30000);
 </script>
 
 {% endblock %} {% block main %} {% for section, state in sections %}
