@@ -38,7 +38,7 @@
 			section.classList.add("loading");
 			section.classList.remove("error");
 
-			await pollSection(section);
+			await Promise.all([pollStatus(), pollSection(section)]);
 
 			section.classList.remove("loading");
 			section.firstElementChild.classList.remove("collapsed");
