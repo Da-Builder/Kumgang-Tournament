@@ -37,6 +37,10 @@ resource "aws_dynamodb_table" "database" {
     name = "name"
     type = "S"
   }
+
+  provisioner "local-exec" {
+    command = "python ../script/database.py ${self.name}"
+  }
 }
 
 
