@@ -25,7 +25,4 @@ Once deployment completes, the *Lambda Function URL* will be outputted.
 
 
 ## Technology
-<img
-	style="display: block; margin-inline: auto"
-	src="https://skillicons.dev/icons?i=python,js,html,css,fastapi,bootstrap,aws,dynamodb,terraform,docker"
-/>
+<div align="center"><img src="https://skillicons.dev/icons?i=python,js,html,css,fastapi,bootstrap,aws,dynamodb,terraform,docker"/></div>
