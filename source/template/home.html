@@ -56,6 +56,18 @@
 		});
 	}
 
+	function enableButton() {
+		document.querySelectorAll("dialog button").forEach((button) => {
+			button.disabled = false;
+		});
+	}
+
+	function disableButton() {
+		document.querySelectorAll("dialog button").forEach((button) => {
+			button.disabled = true;
+		});
+	}
+
 	function openSectionForm(button, sectionId) {
 		const dialog = document.querySelector("dialog:first-of-type");
 		dialog.firstElementChild.reset();
@@ -77,8 +89,9 @@
 		dialog.showModal();
 	}
 
-	async function sumbitSectionForm(event) {
+	async function submitSectionForm(event) {
 		event.preventDefault();
+		disableButton();
 
 		const form = event.currentTarget;
 		const data = Object.fromEntries(new FormData(form));
@@ -99,6 +112,8 @@
 		} catch {
 			form.querySelector("button:last-of-type").textContent = "Error";
 		}
+
+		enableButton();
 	}
 
 	function openStatusForm(sectionId) {
@@ -111,8 +126,9 @@
 		dialog.showModal();
 	}
 
-	async function sumbitStatusForm(event) {
+	async function submitStatusForm(event) {
 		event.preventDefault();
+		disableButton();
 
 		const form = event.currentTarget;
 		const data = Object.fromEntries(new FormData(form));
@@ -131,6 +147,8 @@
 		} catch {
 			form.querySelector("button:last-of-type").textContent = "Error";
 		}
+
+		enableButton();
 	}
 
 	// {% endif %}
@@ -162,7 +180,7 @@
 {% endfor %} {% if admin %}
 
 <dialog class="col-12 col-lg-3 border-0 rounded-4">
-	<form class="d-flex flex-column gap-4" onsubmit="sumbitSectionForm(event)">
+	<form class="d-flex flex-column gap-4" onsubmit="submitSectionForm(event)">
 		<input type="hidden" name="section" />
 		<input type="hidden" name="person_id" />
 		<input type="hidden" name="rank" value="none" />
@@ -204,7 +222,7 @@
 </dialog>
 
 <dialog class="col-12 col-lg-3 border-0 rounded-4">
-	<form class="d-flex flex-column gap-4" onsubmit="sumbitStatusForm(event)">
+	<form class="d-flex flex-column gap-4" onsubmit="submitStatusForm(event)">
 		<input type="hidden" name="section" />
 
 		<select class="form-select" name="state">
