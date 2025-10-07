@@ -29,8 +29,8 @@ resource "aws_dynamodb_table" "database" {
   name = lower("${var.project}-database")
 
   billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
+  read_capacity  = 20
+  write_capacity = 20
 
   hash_key = "name"
   attribute {
