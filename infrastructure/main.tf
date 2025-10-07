@@ -61,7 +61,7 @@ resource "aws_ecr_repository" "registry" {
 resource "aws_lambda_function" "server" {
   function_name = lower("${var.project}-server")
   role          = aws_iam_role.role.arn
-  timeout       = 2
+  timeout       = 5
 
   package_type = "Image"
   image_uri    = "${aws_ecr_repository.registry.repository_url}:latest"
